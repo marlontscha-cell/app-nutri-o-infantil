@@ -9,38 +9,149 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppReceitasRouteImport } from './routes/_app/receitas'
+import { Route as AppPerfilRouteImport } from './routes/_app/perfil'
+import { Route as AppIdadesRouteImport } from './routes/_app/idades'
+import { Route as AppHomeRouteImport } from './routes/_app/home'
+import { Route as AppFavoritosRouteImport } from './routes/_app/favoritos'
+import { Route as AppReceitasIdRouteImport } from './routes/_app/receitas.$id'
 
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppReceitasRoute = AppReceitasRouteImport.update({
+  id: '/receitas',
+  path: '/receitas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPerfilRoute = AppPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppIdadesRoute = AppIdadesRouteImport.update({
+  id: '/idades',
+  path: '/idades',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHomeRoute = AppHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFavoritosRoute = AppFavoritosRouteImport.update({
+  id: '/favoritos',
+  path: '/favoritos',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReceitasIdRoute = AppReceitasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppReceitasRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/onboarding': typeof OnboardingRoute
+  '/favoritos': typeof AppFavoritosRoute
+  '/home': typeof AppHomeRoute
+  '/idades': typeof AppIdadesRoute
+  '/perfil': typeof AppPerfilRoute
+  '/receitas': typeof AppReceitasRouteWithChildren
+  '/receitas/$id': typeof AppReceitasIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/onboarding': typeof OnboardingRoute
+  '/favoritos': typeof AppFavoritosRoute
+  '/home': typeof AppHomeRoute
+  '/idades': typeof AppIdadesRoute
+  '/perfil': typeof AppPerfilRoute
+  '/receitas': typeof AppReceitasRouteWithChildren
+  '/receitas/$id': typeof AppReceitasIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/onboarding': typeof OnboardingRoute
+  '/_app/favoritos': typeof AppFavoritosRoute
+  '/_app/home': typeof AppHomeRoute
+  '/_app/idades': typeof AppIdadesRoute
+  '/_app/perfil': typeof AppPerfilRoute
+  '/_app/receitas': typeof AppReceitasRouteWithChildren
+  '/_app/receitas/$id': typeof AppReceitasIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/onboarding'
+    | '/favoritos'
+    | '/home'
+    | '/idades'
+    | '/perfil'
+    | '/receitas'
+    | '/receitas/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/onboarding'
+    | '/favoritos'
+    | '/home'
+    | '/idades'
+    | '/perfil'
+    | '/receitas'
+    | '/receitas/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/onboarding'
+    | '/_app/favoritos'
+    | '/_app/home'
+    | '/_app/idades'
+    | '/_app/perfil'
+    | '/_app/receitas'
+    | '/_app/receitas/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  OnboardingRoute: typeof OnboardingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +159,96 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/receitas': {
+      id: '/_app/receitas'
+      path: '/receitas'
+      fullPath: '/receitas'
+      preLoaderRoute: typeof AppReceitasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/perfil': {
+      id: '/_app/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof AppPerfilRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/idades': {
+      id: '/_app/idades'
+      path: '/idades'
+      fullPath: '/idades'
+      preLoaderRoute: typeof AppIdadesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/home': {
+      id: '/_app/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AppHomeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/favoritos': {
+      id: '/_app/favoritos'
+      path: '/favoritos'
+      fullPath: '/favoritos'
+      preLoaderRoute: typeof AppFavoritosRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/receitas/$id': {
+      id: '/_app/receitas/$id'
+      path: '/$id'
+      fullPath: '/receitas/$id'
+      preLoaderRoute: typeof AppReceitasIdRouteImport
+      parentRoute: typeof AppReceitasRoute
+    }
   }
 }
 
+interface AppReceitasRouteChildren {
+  AppReceitasIdRoute: typeof AppReceitasIdRoute
+}
+
+const AppReceitasRouteChildren: AppReceitasRouteChildren = {
+  AppReceitasIdRoute: AppReceitasIdRoute,
+}
+
+const AppReceitasRouteWithChildren = AppReceitasRoute._addFileChildren(
+  AppReceitasRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppFavoritosRoute: typeof AppFavoritosRoute
+  AppHomeRoute: typeof AppHomeRoute
+  AppIdadesRoute: typeof AppIdadesRoute
+  AppPerfilRoute: typeof AppPerfilRoute
+  AppReceitasRoute: typeof AppReceitasRouteWithChildren
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppFavoritosRoute: AppFavoritosRoute,
+  AppHomeRoute: AppHomeRoute,
+  AppIdadesRoute: AppIdadesRoute,
+  AppPerfilRoute: AppPerfilRoute,
+  AppReceitasRoute: AppReceitasRouteWithChildren,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  OnboardingRoute: OnboardingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
