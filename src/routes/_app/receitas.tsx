@@ -53,13 +53,13 @@ function ReceitasPage() {
     !!search.quick || !!search.blw || !!search.acceptance || (search.r?.length ?? 0) > 0;
 
   function toggleFlag(key: "quick" | "blw" | "acceptance") {
-    navigate({ search: (s) => ({ ...s, [key]: s[key] ? undefined : true }) });
+    navigate({ search: (s: SearchT) => ({ ...s, [key]: s[key] ? undefined : true }) });
   }
   function toggleR(r: Restriction) {
     navigate({
-      search: (s) => {
+      search: (s: SearchT) => {
         const cur = s.r ?? [];
-        const next = cur.includes(r) ? cur.filter((x) => x !== r) : [...cur, r];
+        const next = cur.includes(r) ? cur.filter((x: Restriction) => x !== r) : [...cur, r];
         return { ...s, r: next.length ? next : undefined };
       },
     });
@@ -96,7 +96,7 @@ function ReceitasPage() {
       <div className="-mx-5 mt-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <Chip
           active={!search.meal}
-          onClick={() => navigate({ search: (s) => ({ ...s, meal: undefined }) })}
+          onClick={() => navigate({ search: (s: SearchT) => ({ ...s, meal: undefined }) })}
         >
           Tudo
         </Chip>
@@ -105,7 +105,7 @@ function ReceitasPage() {
             key={m}
             active={search.meal === m}
             onClick={() =>
-              navigate({ search: (s) => ({ ...s, meal: s.meal === m ? undefined : m }) })
+              navigate({ search: (s: SearchT) => ({ ...s, meal: s.meal === m ? undefined : m }) })
             }
           >
             {MEAL_LABEL[m]}
