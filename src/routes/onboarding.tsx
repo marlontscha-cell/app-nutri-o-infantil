@@ -46,7 +46,7 @@ function Onboarding() {
       feedingStyle: style!,
       restrictions,
     });
-    navigate({ to: "/home" });
+    navigate({ to: "/" });
   }
 
   return (
