@@ -28,14 +28,6 @@ function HomePage() {
   const navigate = useNavigate();
   const { profile, ready } = useBabyProfile();
 
-  // Sem perfil → onboarding (caso usuário entre direto em /home)
-  if (ready && !profile) {
-    if (typeof window !== "undefined") {
-      navigate({ to: "/onboarding" });
-    }
-    return null;
-  }
-
   const ageBand = profile
     ? ageBandFromMonths(ageInMonths(profile.birthMonth))
     : undefined;
@@ -53,6 +45,14 @@ function HomePage() {
     () => filterRecipes(profile, { quick: true }).slice(0, 8),
     [profile]
   );
+
+  // Sem perfil → onboarding
+  if (ready && !profile) {
+    if (typeof window !== "undefined") {
+      navigate({ to: "/onboarding" });
+    }
+    return null;
+  }
 
   return (
     <div className="px-5 pt-10">
