@@ -11,11 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AppRouteImport } from './routes/_app'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppReceitasRouteImport } from './routes/_app/receitas'
 import { Route as AppPerfilRouteImport } from './routes/_app/perfil'
 import { Route as AppIdadesRouteImport } from './routes/_app/idades'
-import { Route as AppHomeRouteImport } from './routes/_app/home'
 import { Route as AppFavoritosRouteImport } from './routes/_app/favoritos'
 import { Route as AppReceitasIdRouteImport } from './routes/_app/receitas.$id'
 
@@ -28,10 +27,10 @@ const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
 } as any)
 const AppReceitasRoute = AppReceitasRouteImport.update({
   id: '/receitas',
@@ -48,11 +47,6 @@ const AppIdadesRoute = AppIdadesRouteImport.update({
   path: '/idades',
   getParentRoute: () => AppRoute,
 } as any)
-const AppHomeRoute = AppHomeRouteImport.update({
-  id: '/home',
-  path: '/home',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppFavoritosRoute = AppFavoritosRouteImport.update({
   id: '/favoritos',
   path: '/favoritos',
@@ -65,35 +59,32 @@ const AppReceitasIdRoute = AppReceitasIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AppIndexRoute
   '/onboarding': typeof OnboardingRoute
   '/favoritos': typeof AppFavoritosRoute
-  '/home': typeof AppHomeRoute
   '/idades': typeof AppIdadesRoute
   '/perfil': typeof AppPerfilRoute
   '/receitas': typeof AppReceitasRouteWithChildren
   '/receitas/$id': typeof AppReceitasIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
   '/favoritos': typeof AppFavoritosRoute
-  '/home': typeof AppHomeRoute
   '/idades': typeof AppIdadesRoute
   '/perfil': typeof AppPerfilRoute
   '/receitas': typeof AppReceitasRouteWithChildren
+  '/': typeof AppIndexRoute
   '/receitas/$id': typeof AppReceitasIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/_app/favoritos': typeof AppFavoritosRoute
-  '/_app/home': typeof AppHomeRoute
   '/_app/idades': typeof AppIdadesRoute
   '/_app/perfil': typeof AppPerfilRoute
   '/_app/receitas': typeof AppReceitasRouteWithChildren
+  '/_app/': typeof AppIndexRoute
   '/_app/receitas/$id': typeof AppReceitasIdRoute
 }
 export interface FileRouteTypes {
@@ -102,36 +93,32 @@ export interface FileRouteTypes {
     | '/'
     | '/onboarding'
     | '/favoritos'
-    | '/home'
     | '/idades'
     | '/perfil'
     | '/receitas'
     | '/receitas/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/onboarding'
     | '/favoritos'
-    | '/home'
     | '/idades'
     | '/perfil'
     | '/receitas'
+    | '/'
     | '/receitas/$id'
   id:
     | '__root__'
-    | '/'
     | '/_app'
     | '/onboarding'
     | '/_app/favoritos'
-    | '/_app/home'
     | '/_app/idades'
     | '/_app/perfil'
     | '/_app/receitas'
+    | '/_app/'
     | '/_app/receitas/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   OnboardingRoute: typeof OnboardingRoute
 }
@@ -152,12 +139,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/receitas': {
       id: '/_app/receitas'
@@ -178,13 +165,6 @@ declare module '@tanstack/react-router' {
       path: '/idades'
       fullPath: '/idades'
       preLoaderRoute: typeof AppIdadesRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/home': {
-      id: '/_app/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof AppHomeRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/favoritos': {
@@ -218,27 +198,36 @@ const AppReceitasRouteWithChildren = AppReceitasRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppFavoritosRoute: typeof AppFavoritosRoute
-  AppHomeRoute: typeof AppHomeRoute
   AppIdadesRoute: typeof AppIdadesRoute
   AppPerfilRoute: typeof AppPerfilRoute
   AppReceitasRoute: typeof AppReceitasRouteWithChildren
+  AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppFavoritosRoute: AppFavoritosRoute,
-  AppHomeRoute: AppHomeRoute,
   AppIdadesRoute: AppIdadesRoute,
   AppPerfilRoute: AppPerfilRoute,
   AppReceitasRoute: AppReceitasRouteWithChildren,
+  AppIndexRoute: AppIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   OnboardingRoute: OnboardingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
