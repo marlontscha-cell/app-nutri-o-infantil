@@ -14,7 +14,7 @@ import { MEAL_EMOJI, MEAL_LABEL, AGE_LABEL } from "@/lib/types";
 import { RecipeCard } from "@/components/recipe-card";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_app/home")({
+export const Route = createFileRoute("/_app/")({
   head: () => ({
     meta: [
       { title: "Início — Receitas do Bebê" },
