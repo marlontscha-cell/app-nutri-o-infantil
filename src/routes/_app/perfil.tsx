@@ -128,7 +128,7 @@ function PerfilPage() {
 
         <Button
           onClick={handleSave}
-          className="mt-2 h-13 rounded-2xl bg-accent py-3.5 text-base font-medium text-accent-foreground hover:bg-accent/90"
+          className="mt-2 h-14 rounded-2xl bg-accent text-base font-medium text-accent-foreground hover:bg-accent/90"
         >
           {saved ? "Salvo 💛" : "Salvar alterações"}
         </Button>
