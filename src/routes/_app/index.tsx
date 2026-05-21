@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { ChevronRight, HeartHandshake, Sparkles, Clock } from "lucide-react";
 import { useBabyProfile } from "@/hooks/use-baby-profile";
@@ -14,7 +14,7 @@ import { MEAL_EMOJI, MEAL_LABEL, AGE_LABEL } from "@/lib/types";
 import { RecipeCard } from "@/components/recipe-card";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_app/home")({
+export const Route = createFileRoute("/_app/")({
   head: () => ({
     meta: [
       { title: "Início — Receitas do Bebê" },
@@ -25,8 +25,7 @@ export const Route = createFileRoute("/_app/home")({
 });
 
 function HomePage() {
-  const navigate = useNavigate();
-  const { profile, ready } = useBabyProfile();
+  const { profile } = useBabyProfile();
 
   const ageBand = profile
     ? ageBandFromMonths(ageInMonths(profile.birthMonth))
@@ -45,14 +44,6 @@ function HomePage() {
     () => filterRecipes(profile, { quick: true }).slice(0, 8),
     [profile]
   );
-
-  // Sem perfil → onboarding
-  if (ready && !profile) {
-    if (typeof window !== "undefined") {
-      navigate({ to: "/onboarding" });
-    }
-    return null;
-  }
 
   return (
     <div className="px-5 pt-10">

@@ -3,7 +3,7 @@ import { Home, BookOpen, Heart, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
-  { to: "/home", label: "Início", icon: Home },
+  { to: "/", label: "Início", icon: Home },
   { to: "/receitas", label: "Receitas", icon: BookOpen },
   { to: "/favoritos", label: "Favoritos", icon: Heart },
   { to: "/perfil", label: "Perfil", icon: User },
@@ -16,8 +16,7 @@ export function BottomNav() {
       <ul className="mx-auto flex max-w-md items-stretch justify-around safe-bottom pt-2">
         {items.map(({ to, label, icon: Icon }) => {
           const active =
-            pathname === to ||
-            (to !== "/home" && pathname.startsWith(to));
+            to === "/" ? pathname === "/" : pathname.startsWith(to);
           return (
             <li key={to} className="flex-1">
               <Link
