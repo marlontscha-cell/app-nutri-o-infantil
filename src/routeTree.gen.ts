@@ -12,10 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppSosRouteImport } from './routes/_app/sos'
 import { Route as AppReceitasRouteImport } from './routes/_app/receitas'
-import { Route as AppPerfilRouteImport } from './routes/_app/perfil'
-import { Route as AppIdadesRouteImport } from './routes/_app/idades'
-import { Route as AppFavoritosRouteImport } from './routes/_app/favoritos'
+import { Route as AppBebeRouteImport } from './routes/_app/bebe'
 import { Route as AppReceitasIdRouteImport } from './routes/_app/receitas.$id'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -32,24 +31,19 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSosRoute = AppSosRouteImport.update({
+  id: '/sos',
+  path: '/sos',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppReceitasRoute = AppReceitasRouteImport.update({
   id: '/receitas',
   path: '/receitas',
   getParentRoute: () => AppRoute,
 } as any)
-const AppPerfilRoute = AppPerfilRouteImport.update({
-  id: '/perfil',
-  path: '/perfil',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppIdadesRoute = AppIdadesRouteImport.update({
-  id: '/idades',
-  path: '/idades',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppFavoritosRoute = AppFavoritosRouteImport.update({
-  id: '/favoritos',
-  path: '/favoritos',
+const AppBebeRoute = AppBebeRouteImport.update({
+  id: '/bebe',
+  path: '/bebe',
   getParentRoute: () => AppRoute,
 } as any)
 const AppReceitasIdRoute = AppReceitasIdRouteImport.update({
@@ -61,18 +55,16 @@ const AppReceitasIdRoute = AppReceitasIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/onboarding': typeof OnboardingRoute
-  '/favoritos': typeof AppFavoritosRoute
-  '/idades': typeof AppIdadesRoute
-  '/perfil': typeof AppPerfilRoute
+  '/bebe': typeof AppBebeRoute
   '/receitas': typeof AppReceitasRouteWithChildren
+  '/sos': typeof AppSosRoute
   '/receitas/$id': typeof AppReceitasIdRoute
 }
 export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
-  '/favoritos': typeof AppFavoritosRoute
-  '/idades': typeof AppIdadesRoute
-  '/perfil': typeof AppPerfilRoute
+  '/bebe': typeof AppBebeRoute
   '/receitas': typeof AppReceitasRouteWithChildren
+  '/sos': typeof AppSosRoute
   '/': typeof AppIndexRoute
   '/receitas/$id': typeof AppReceitasIdRoute
 }
@@ -80,10 +72,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/onboarding': typeof OnboardingRoute
-  '/_app/favoritos': typeof AppFavoritosRoute
-  '/_app/idades': typeof AppIdadesRoute
-  '/_app/perfil': typeof AppPerfilRoute
+  '/_app/bebe': typeof AppBebeRoute
   '/_app/receitas': typeof AppReceitasRouteWithChildren
+  '/_app/sos': typeof AppSosRoute
   '/_app/': typeof AppIndexRoute
   '/_app/receitas/$id': typeof AppReceitasIdRoute
 }
@@ -92,28 +83,19 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/onboarding'
-    | '/favoritos'
-    | '/idades'
-    | '/perfil'
+    | '/bebe'
     | '/receitas'
+    | '/sos'
     | '/receitas/$id'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/onboarding'
-    | '/favoritos'
-    | '/idades'
-    | '/perfil'
-    | '/receitas'
-    | '/'
-    | '/receitas/$id'
+  to: '/onboarding' | '/bebe' | '/receitas' | '/sos' | '/' | '/receitas/$id'
   id:
     | '__root__'
     | '/_app'
     | '/onboarding'
-    | '/_app/favoritos'
-    | '/_app/idades'
-    | '/_app/perfil'
+    | '/_app/bebe'
     | '/_app/receitas'
+    | '/_app/sos'
     | '/_app/'
     | '/_app/receitas/$id'
   fileRoutesById: FileRoutesById
@@ -146,6 +128,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/sos': {
+      id: '/_app/sos'
+      path: '/sos'
+      fullPath: '/sos'
+      preLoaderRoute: typeof AppSosRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/receitas': {
       id: '/_app/receitas'
       path: '/receitas'
@@ -153,25 +142,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppReceitasRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/perfil': {
-      id: '/_app/perfil'
-      path: '/perfil'
-      fullPath: '/perfil'
-      preLoaderRoute: typeof AppPerfilRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/idades': {
-      id: '/_app/idades'
-      path: '/idades'
-      fullPath: '/idades'
-      preLoaderRoute: typeof AppIdadesRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/favoritos': {
-      id: '/_app/favoritos'
-      path: '/favoritos'
-      fullPath: '/favoritos'
-      preLoaderRoute: typeof AppFavoritosRouteImport
+    '/_app/bebe': {
+      id: '/_app/bebe'
+      path: '/bebe'
+      fullPath: '/bebe'
+      preLoaderRoute: typeof AppBebeRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/receitas/$id': {
@@ -197,18 +172,16 @@ const AppReceitasRouteWithChildren = AppReceitasRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
-  AppFavoritosRoute: typeof AppFavoritosRoute
-  AppIdadesRoute: typeof AppIdadesRoute
-  AppPerfilRoute: typeof AppPerfilRoute
+  AppBebeRoute: typeof AppBebeRoute
   AppReceitasRoute: typeof AppReceitasRouteWithChildren
+  AppSosRoute: typeof AppSosRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppFavoritosRoute: AppFavoritosRoute,
-  AppIdadesRoute: AppIdadesRoute,
-  AppPerfilRoute: AppPerfilRoute,
+  AppBebeRoute: AppBebeRoute,
   AppReceitasRoute: AppReceitasRouteWithChildren,
+  AppSosRoute: AppSosRoute,
   AppIndexRoute: AppIndexRoute,
 }
 
@@ -221,3 +194,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
