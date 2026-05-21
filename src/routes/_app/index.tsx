@@ -103,9 +103,7 @@ function MealCard({
 }: {
   meal: Meal;
   entry: MealEntry;
-  recipe: ReturnType<typeof Object>["assign"] extends never
-    ? never
-    : (typeof recipes)[number] | undefined;
+  recipe: (typeof recipes)[number] | undefined;
   onSwap: () => void;
 }) {
   const served = !!entry.servedAt;
