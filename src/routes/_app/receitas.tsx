@@ -29,8 +29,10 @@ export const Route = createFileRoute("/_app/receitas")({
   component: ReceitasPage,
 });
 
+type SearchT = z.infer<typeof searchSchema>;
+
 function ReceitasPage() {
-  const search = Route.useSearch();
+  const search = Route.useSearch() as SearchT;
   const navigate = Route.useNavigate();
   const { profile } = useBabyProfile();
 

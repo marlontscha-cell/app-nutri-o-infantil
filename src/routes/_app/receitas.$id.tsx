@@ -34,7 +34,7 @@ export const Route = createFileRoute("/_app/receitas/$id")({
 });
 
 function RecipeDetail() {
-  const { recipe } = Route.useLoaderData();
+  const { recipe } = Route.useLoaderData() as { recipe: typeof recipes[number] };
   const { has, toggle } = useFavorites();
   const fav = has(recipe.id);
 
