@@ -1,220 +1,164 @@
+# Plano: Receitas do Bebê → Copiloto Diário
 
-# Receitas do Bebê — Arquitetura do MVP
-
-App mobile-first, premium, que responde uma única pergunta: **"O que eu preparo para meu bebê hoje?"**. Posicionamento: assistente, não catálogo.
-
----
-
-## 1. Princípios de produto (guard-rails)
-
-- **20 segundos até a decisão.** Da abertura do app até "vou fazer isso aqui".
-- **Personalização visível desde o primeiro segundo** (nome do bebê, idade, restrições aparecem na Home).
-- **Acolhimento na copy.** Nunca culpar. Frases curtas, calorosas.
-- **Subtração > adição.** Cada elemento precisa responder: *"isso ajuda a mãe a decidir mais rápido?"*. Se não, fora.
-- **Premium silencioso.** Muito espaço em branco, tipografia confiante, micro-interações sutis, zero "cara de app infantil".
+Objetivo: transformar o app atual de "catálogo + sugestões" em um **painel diário** que resolve "o que meu bebê vai comer hoje?" em poucos segundos, com foco em retenção (não monetização).
 
 ---
 
-## 2. Design system
+## 1. Nova arquitetura de experiência
 
-**Paleta (tokens em `src/styles.css` via oklch):**
-- `--background`: creme suave (off-white quente)
-- `--card`: branco puro
-- `--foreground`: cinza-grafite quente (não preto)
-- `--muted`: bege claro
-- `--primary`: verde-sálvia suave (elementos calmos, idade, tags)
-- `--accent` / CTA: coral suave (usado com parcimônia, só em ações principais)
-- `--border`: bege muito claro
-
-**Tipografia:** par moderno e acolhedor — `Fraunces` (display, headings emocionais) + `Inter` (UI/body). Headings com tracking levemente negativo.
-
-**Componentes-base:** cards com `radius-2xl`, sombras quase imperceptíveis, ícones lineares (lucide), sem gradientes berrantes, sem emojis decorativos espalhados (emojis só como sinal funcional: 💛 na saudação, ícones de refeição).
-
----
-
-## 3. Arquitetura de rotas (TanStack Start, mobile-first)
+Fluxo principal (1 mão, poucos toques):
 
 ```
-src/routes/
-  __root.tsx                 layout global (sem chrome) — só Outlet + providers
-  index.tsx                  redireciona: se onboarding incompleto → /onboarding, senão → /home
-  onboarding.tsx             fluxo em etapas (sem bottom nav)
-  _app.tsx                   layout com bottom nav (pathless)
-    _app/home.tsx            Home (assistente)
-    _app/receitas.tsx        Lista + filtros
-    _app/receitas.$id.tsx    Detalhe da receita
-    _app/idades.tsx          Receitas por faixa etária (acessível pela Home e Receitas)
-    _app/favoritos.tsx
-    _app/perfil.tsx
+Abrir app
+  → Home (Plano do dia: 4 refeições já sugeridas)
+  → Tocar refeição → Receita guiada
+  → "Marcar como servido" + feedback (amou / aceitou / rejeitou)
+  → Voltar para Home (refeição marcada como feita)
+
+Atalhos sempre visíveis:
+  → SOS Refeição (ajuda situacional)
+  → Trocar sugestão de uma refeição específica
 ```
 
-Persistência do MVP: **localStorage** (perfil do bebê, favoritos, flag de onboarding). Estrutura tipada pensando em migrar para Lovable Cloud depois, sem implementar agora.
+Sem catálogo na navegação principal. Receitas viram **resultado de uma decisão**, não destino.
+
+---
+
+## 2. Mudanças na navegação
+
+Bottom nav atual (5 itens) → **3 itens**:
+
+- **Hoje** (home / plano do dia) — destino principal
+- **SOS** (ajuda rápida situacional) — novo
+- **Bebê** (perfil + histórico de aceitação) — funde Perfil + Favoritos
+
+`/receitas` e `/idades` deixam de ser abas. Continuam acessíveis via links contextuais (ex: "ver mais ideias para o almoço"), mas não competem com o fluxo diário.
+
+---
+
+## 3. Telas
+
+### 3.1 Home — "Hoje" (`/`)
+
+Hero acolhedor:
+- "Bom dia, mamãe 👋"
+- "O que o João vai comer hoje?"
+- Data curta ("ter, 21 de mai")
+
+**Plano do dia** — 4 cards grandes empilhados (café, almoço, lanche, jantar):
+- imagem/emoji + título da receita
+- tempo + idade ("15 min · 8–12m")
+- estado: pendente / servido (✓) / com feedback (😍🙂😣)
+- ações rápidas no card: **Trocar** (gera outra sugestão para aquela refeição) e **Abrir**
+
+Abaixo:
+- Botão primário: **"Gerar sugestões do dia"** (regenera as 4 de uma vez, com nova seed)
+- Botão secundário: **"Estou sem ideias agora"** → leva ao SOS
+
+Removido da home: atalhos por refeição (redundantes), carrossel de rápidas, grid de idades. A home fica visualmente respirada — só o plano do dia.
+
+### 3.2 SOS Refeição (`/sos`)
+
+Lista de botões grandes (1 por linha), cada um filtra e abre receitas:
+
+- ⏱ Tenho só 10 minutos
+- 😣 Meu bebê rejeitou comida
+- 🌿 Quero algo fácil
+- 🧺 Só tenho poucos ingredientes
+- 🌙 Preciso de jantar rápido
+
+Cada botão leva a `/receitas` com filtros pré-aplicados (`quick`, `acceptance`, `meal=jantar`, etc.). O filtro de "poucos ingredientes" usa um novo campo `recipe.minimalIngredients: boolean` (≤5 itens).
+
+### 3.3 Receita guiada (`/receitas/$id`)
+
+Mantém estrutura atual, refina hierarquia:
+- imagem grande
+- tempo · idade · textura ideal (novo campo `texture`)
+- ingredientes (lista limpa)
+- preparo passo a passo (numerado, tipografia maior)
+- 1–2 dicas curtas
+- observações rápidas (alergênicos, substituições)
+
+Rodapé fixo:
+- **"Marcar como servido"** (primário, coral)
+- Após marcar → aparece linha de feedback: amou 😍 / aceitou 🙂 / rejeitou 😣
+
+### 3.4 Bebê (`/bebe`)
+
+Funde Perfil + Favoritos + Histórico:
+- cabeçalho do bebê (nome, idade, estilo)
+- editar perfil
+- **Últimas refeições** (10 mais recentes do histórico, com feedback)
+- **Favoritas** (lista compacta)
+
+### 3.5 Catálogo (`/receitas`) — secundário
+
+Continua existindo como destino dos atalhos SOS e do "ver mais". Não aparece na bottom nav. Filtros existentes continuam.
+
+---
+
+## 4. Modelo de dados (localStorage)
+
+Novos:
 
 ```ts
-type BabyProfile = {
-  name: string;
-  birthMonth: string;           // ISO — derivamos idade dinamicamente
-  feedingStyle: 'tradicional' | 'blw' | 'misto';
-  restrictions: ('sem_ovo'|'sem_leite'|'sem_gluten'|'vegetariano')[];
+// rdb_daily_plan_v1
+type DailyPlan = {
+  date: string;            // YYYY-MM-DD
+  babyName: string;        // invalidar se trocar bebê
+  meals: Record<Meal, { recipeId: string; servedAt?: string; feedback?: "amou"|"aceitou"|"rejeitou" }>;
+};
+
+// rdb_history_v1
+type HistoryEntry = {
+  date: string;
+  meal: Meal;
+  recipeId: string;
+  feedback?: "amou"|"aceitou"|"rejeitou";
 };
 ```
 
-Dados de receitas: arquivo TS estático (`src/data/recipes.ts`) com ~25–30 receitas curadas cobrindo as 4 refeições × faixas etárias × restrições. Suficiente para validação; trocável por backend depois.
+Lógica:
+- Ao abrir Home: se não houver plano de hoje, gerar a partir de `dailySuggestion` para cada refeição e salvar.
+- "Trocar" sugestão: re-roda com seed alternativa (`date + meal + counter++`), atualiza só aquela refeição no plano.
+- "Gerar sugestões do dia": sobrescreve todo o plano com nova seed.
+- "Marcar como servido": grava `servedAt`. Feedback grava `feedback` no plano + adiciona entrada em `history`.
+
+Recipe ganha 2 campos opcionais: `texture?: string` e `minimalIngredients?: boolean` (derivado de `ingredients.length <= 5`, calculado, não armazenado).
 
 ---
 
-## 4. Fluxo das telas
+## 5. Design
 
-```text
-            ┌──────────────┐
-   abrir →  │  index.tsx   │  checa localStorage
-            └──────┬───────┘
-                   │
-        primeiro acesso?
-           sim │        │ não
-               ▼        ▼
-        /onboarding   /home
-               │
-               └──── salva perfil ──► /home
-
-   Bottom nav (sempre visível em _app):
-   [ Home ] [ Receitas ] [ Favoritos ] [ Perfil ]
-
-   Home ──► card de sugestão ──► /receitas/$id
-        ──► atalho refeição    ──► /receitas?meal=almoco
-        ──► "rejeita comida"   ──► /receitas?tag=aceitacao
-        ──► "rápidas"          ──► /receitas?tag=rapida
-        ──► faixa etária       ──► /idades
-```
+Mantém tokens atuais (cream/sage/coral via oklch). Refinos:
+- mais respiro vertical na home (cards 96–112px de altura mínima, gap-4)
+- estado "servido" com check verde sálvia e leve fade
+- micro-animações: fade-in dos cards, scale-95→100 ao tocar, transição suave ao trocar sugestão
+- tipografia: títulos das refeições em Fraunces 20–22px, ingredientes/passos em Inter 16px com line-height generoso
 
 ---
 
-## 5. Wireframes mentais (mobile, 390px)
+## 6. Ordem de execução
 
-### 5.1 Onboarding (4 telas, ~60s)
-
-```
-┌───────────────────────────┐
-│                           │
-│   💛                       │
-│   Vamos personalizar      │
-│   tudo para o seu bebê    │
-│                           │
-│   [ Começar ]   ← coral   │
-└───────────────────────────┘
-```
-Etapas: **Nome do bebê → Idade (date picker mês/ano) → Tipo de alimentação (3 cards grandes) → Restrições (chips multi-select, opcional)** → tela final "Tudo pronto, [Nome] 💛".
-
-Barra de progresso fina no topo. Botão "Pular" só na tela de restrições.
-
-### 5.2 Home — a tela mais importante
-
-```
-┌───────────────────────────┐
-│ Bom dia, Ana 💛           │  ← Fraunces, grande
-│ O que o João vai comer    │
-│ hoje?                     │  ← muted
-│                           │
-│ [🥣] [🍲] [🍌] [🍛]        │  ← 4 atalhos grandes, grid 2x2 ou row
-│ Café  Almoço Lanche Jantar│
-│                           │
-│ ─────────────────────     │
-│ Sem ideias hoje?          │  ← headline acolhedora
-│                           │
-│ ┌─────────────────────┐   │
-│ │ ☕ CAFÉ DA MANHÃ     │   │  ← 3 cards verticais empilhados
-│ │ Papa de banana      │   │     (não carrossel — zero fricção)
-│ │ com aveia           │   │
-│ │ 10 min · 8m+        │   │
-│ └─────────────────────┘   │
-│ ┌─────────────────────┐   │
-│ │ 🍲 ALMOÇO ...        │   │
-│ └─────────────────────┘   │
-│ ┌─────────────────────┐   │
-│ │ 🍌 LANCHE ...        │   │
-│ └─────────────────────┘   │
-│                           │
-│ [ Meu bebê rejeita comida]│  ← botão ghost, tom acolhedor
-│                           │
-│ Receitas rápidas    ver → │
-│ ◄ [card] [card] [card] ►  │  ← carrossel horizontal Netflix-style
-│                           │
-│ Por idade do João         │
-│ ◄ [6-8m][8-12m][1-2a] ►   │
-└───────────────────────────┘
-  [Home] [Receitas] [♥] [👤]
-```
-
-As 3 sugestões do dia são **determinísticas por dia + perfil** (hash da data + idade + restrições → seleciona da lista). Mesma mãe vê as mesmas sugestões ao longo do dia — sensação de "alguém pensou nisso por mim", não de feed aleatório.
-
-### 5.3 Receitas (lista)
-
-Header com search opcional escondido (ícone), chips de filtro horizontais: `Idade do bebê` (default) · `BLW` · `Rápida` · `Sem leite` · `Sem ovo` · `Sem glúten`. Tabs de refeição no topo. Grid de 2 colunas com cards-foto. Sem paginação — lista curta.
-
-### 5.4 Detalhe da receita
-
-```
-┌───────────────────────────┐
-│ [foto grande 1:1]   ♥     │
-│                           │
-│ Purê de mandioquinha      │  ← Fraunces
-│ com frango                │
-│ ⏱ 20 min · 8m+ · BLW ok   │
-│                           │
-│ Ingredientes              │
-│ • ...                     │
-│ • ...                     │
-│                           │
-│ Modo de preparo           │
-│ 1. ...                    │
-│ 2. ...                    │
-│                           │
-│ 💡 Dica da introdução     │  ← 1–2 linhas, sem texto técnico
-└───────────────────────────┘
-```
-
-### 5.5 Idades
-
-Hero com idade atual do bebê destacada, 4 cards grandes (6–8m, 8–12m, 1–2a, 2–3a) com micro-descrição ("texturas amassadas, sabores suaves"). Toque → lista filtrada.
-
-### 5.6 Favoritos
-
-Vazio: ilustração leve + "Toque no ♥ para guardar receitas que o João amou". Preenchido: mesma grid de Receitas.
-
-### 5.7 Perfil
-
-Lista editável: foto/avatar opcional, nome, idade, tipo de alimentação, restrições. Rodapé discreto: "Em breve: mais de um bebê" (sinaliza expansão sem implementar).
+1. Tipos + modelo de dados (`types.ts`, hooks `useDailyPlan`, `useHistory`)
+2. Reestruturar bottom nav (3 itens) + nova rota `/sos` e `/bebe`
+3. Reescrever Home como Plano do Dia
+4. Adicionar "Marcar como servido" + feedback na tela de receita
+5. Construir tela SOS (botões → filtros)
+6. Construir tela Bebê (perfil + favoritos + histórico)
+7. Polimento: animações, estados vazios, microcopy acolhedora
 
 ---
 
-## 6. O que NÃO vai no MVP
+## O que NÃO entra agora
 
-Assinatura, IA, planejador semanal, lista de compras, gamificação, múltiplos perfis, notificações, dashboard, busca avançada. Tipos preparados para múltiplos bebês (`BabyProfile[]` no storage, mas UI single).
-
----
-
-## Detalhes técnicos
-
-- **Stack:** TanStack Start já configurado. Rotas conforme seção 3. Sem libs novas além de `date-fns` para idade do bebê.
-- **Tokens:** definidos em `src/styles.css` em oklch; nada de cores hardcoded em componentes. Variants de botão: `primary` (coral), `soft` (verde-sálvia), `ghost`.
-- **Tipografia:** importar Fraunces + Inter via `<link>` no `__root.tsx` head.
-- **Imagens:** gerar ~10–15 imagens de receitas (premium, fundo claro, food-styling editorial) com imagegen e salvar em `src/assets/recipes/`.
-- **Estado:** hook `useBabyProfile()` lendo/escrevendo localStorage; hook `useFavorites()` idem; helper `getDailySuggestions(profile, date)` puro.
-- **Engine de sugestões:** filtra `recipes` por idade + restrições, agrupa por refeição, escolhe deterministicamente por seed `YYYY-MM-DD + babyId`.
-- **Bottom nav:** componente próprio em `_app.tsx`, fixo no rodapé com safe-area inset.
-- **SEO/head:** cada rota com `head()` próprio (título, description, og).
+- paywall, assinatura, premium, bloqueios
+- IA / geração dinâmica de receitas
+- planejador semanal, lista de compras
+- notificações, gamificação
+- múltiplos bebês
+- dashboard de nutrição
 
 ---
 
-## Plano de execução (após sua aprovação)
-
-1. Tokens + tipografia + base do design system.
-2. Estrutura de rotas (`__root`, `_app`, bottom nav, redirecionador no `index`).
-3. Onboarding (4 etapas) + persistência do perfil.
-4. Dados de receitas + imagens geradas + engine de sugestões.
-5. Home (hero personalizada, atalhos, 3 sugestões, "rejeita comida", rápidas, por idade).
-6. Lista de Receitas + filtros + Detalhe.
-7. Idades + Favoritos + Perfil.
-8. Polimento: micro-interações, vazios, copy, QA mobile 390px.
-
-Quer que eu siga com esse plano ou ajusto algum ponto (paleta, ordem, conteúdo de alguma tela)?
+Quer que eu siga com este plano, ou prefere ajustar algo (ex: manter `/receitas` na bottom nav, mudar os botões do SOS, simplificar ainda mais a home)?

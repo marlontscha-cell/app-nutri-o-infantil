@@ -15,6 +15,7 @@ const searchSchema = z.object({
   quick: z.boolean().optional(),
   blw: z.boolean().optional(),
   acceptance: z.boolean().optional(),
+  minimal: z.boolean().optional(),
   r: z.array(z.enum(["sem_ovo", "sem_leite", "sem_gluten", "vegetariano"])).optional(),
 });
 
@@ -44,15 +45,20 @@ function ReceitasPage() {
         quick: search.quick,
         blw: search.blw,
         acceptance: search.acceptance,
+        minimal: search.minimal,
         extraRestrictions: search.r,
       }),
     [profile, search]
   );
 
   const hasFilter =
-    !!search.quick || !!search.blw || !!search.acceptance || (search.r?.length ?? 0) > 0;
+    !!search.quick ||
+    !!search.blw ||
+    !!search.acceptance ||
+    !!search.minimal ||
+    (search.r?.length ?? 0) > 0;
 
-  function toggleFlag(key: "quick" | "blw" | "acceptance") {
+  function toggleFlag(key: "quick" | "blw" | "acceptance" | "minimal") {
     navigate({ search: (s: SearchT) => ({ ...s, [key]: s[key] ? undefined : true }) });
   }
   function toggleR(r: Restriction) {
@@ -149,12 +155,12 @@ function ReceitasPage() {
         )}
       </div>
 
-      {/* Atalho por idade */}
+      {/* Atalho voltar */}
       <Link
-        to="/idades"
+        to="/"
         className="mt-6 flex items-center justify-center rounded-2xl border border-dashed border-border bg-card px-4 py-3 text-sm text-muted-foreground"
       >
-        Explorar receitas por faixa etária →
+        ← Voltar ao plano do dia
       </Link>
     </div>
   );

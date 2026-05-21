@@ -31,6 +31,20 @@ export function greeting(now = new Date()): string {
   return "Boa noite";
 }
 
+export function todayISO(date = new Date()): string {
+  return date.toISOString().slice(0, 10);
+}
+
+export function formatShortDate(date = new Date()): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+  })
+    .format(date)
+    .replace(".", "");
+}
+
 function respectsRestrictions(recipe: Recipe, restrictions: Restriction[]): boolean {
   return restrictions.every((r) => recipe.restrictionsSafe.includes(r));
 }
@@ -43,6 +57,7 @@ export function filterRecipes(
     quick?: boolean;
     blw?: boolean;
     acceptance?: boolean;
+    minimal?: boolean;
     extraRestrictions?: Restriction[];
   } = {}
 ): Recipe[] {
@@ -60,12 +75,12 @@ export function filterRecipes(
     if (opts.quick && !r.quick) return false;
     if (opts.blw && !r.blwFriendly) return false;
     if (opts.acceptance && !r.acceptanceFriendly) return false;
+    if (opts.minimal && r.ingredients.length > 5) return false;
     if (!respectsRestrictions(r, restrictions)) return false;
     return true;
   });
 }
 
-// Hash determinístico simples
 function hash(s: string): number {
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {
@@ -78,17 +93,15 @@ function hash(s: string): number {
 export function dailySuggestion(
   profile: BabyProfile | null,
   meal: Meal,
-  date = new Date()
+  date = new Date(),
+  salt = 0
 ): Recipe | null {
   const pool = filterRecipes(profile, { meal });
-  if (pool.length === 0) {
-    // fallback: ignora restrições para nunca aparecer vazio
-    const fallback = recipes.filter((r) => r.meal === meal);
-    if (fallback.length === 0) return null;
-    return fallback[0];
-  }
-  const seed = `${date.toISOString().slice(0, 10)}|${profile?.name ?? "x"}|${meal}`;
-  return pool[hash(seed) % pool.length];
+  const list =
+    pool.length > 0 ? pool : recipes.filter((r) => r.meal === meal);
+  if (list.length === 0) return null;
+  const seed = `${todayISO(date)}|${profile?.name ?? "x"}|${meal}|${salt}`;
+  return list[hash(seed) % list.length];
 }
 
 export const ALL_MEALS: Meal[] = ["cafe", "almoco", "lanche", "jantar"];
