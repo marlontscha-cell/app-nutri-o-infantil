@@ -55,6 +55,26 @@ function RecipeDetail() {
   const { plan, markServed, setFeedback } = useDailyPlan();
   const router = useRouter();
   const fav = has(recipe.id);
+  const [heartBeat, setHeartBeat] = useState(0);
+  const [servedBeat, setServedBeat] = useState(0);
+
+  const handleToggleFav = () => {
+    const willFav = !fav;
+    toggle(recipe.id);
+    setHeartBeat((n) => n + 1);
+    if (willFav) {
+      toast.success("Receita adicionada aos favoritos 💛");
+    } else {
+      toast("Receita removida dos favoritos");
+    }
+  };
+
+  const handleMarkServed = (meal: Meal) => {
+    markServed(meal);
+    setServedBeat((n) => n + 1);
+    toast.success("Refeição marcada como servida 🍽️");
+  };
+
 
   const planMeal = useMemo<Meal | null>(() => {
     if (!plan) return null;
