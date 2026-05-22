@@ -96,17 +96,17 @@ function RecipeDetail() {
     <div className="pb-32">
       {/* Hero image */}
       <div className="relative">
-        <div className="aspect-[4/3] w-full overflow-hidden bg-secondary">
+        <div className="aspect-[10/9] w-full overflow-hidden bg-secondary">
           {recipe.image ? (
             <img
               src={recipe.image}
               alt={recipe.title}
               width={1024}
-              height={768}
+              height={922}
               className="h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-[140px]">
+            <div className="flex h-full w-full items-center justify-center text-[150px]">
               {recipe.emoji}
             </div>
           )}
@@ -121,12 +121,20 @@ function RecipeDetail() {
         </button>
         <button
           type="button"
-          onClick={() => toggle(recipe.id)}
-          className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-background/85 shadow-sm backdrop-blur"
+          onClick={handleToggleFav}
+          className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-background/85 shadow-sm backdrop-blur active:scale-95 transition-transform"
           aria-label={fav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
         >
-          <Heart className={cn("h-5 w-5", fav && "fill-accent text-accent")} />
+          <Heart
+            key={heartBeat}
+            className={cn(
+              "h-5 w-5 transition-colors",
+              fav && "fill-accent text-accent",
+              heartBeat > 0 && "animate-[heart-pop_400ms_ease-out]"
+            )}
+          />
         </button>
+
       </div>
 
       {/* Header */}
