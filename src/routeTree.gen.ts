@@ -57,16 +57,16 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/bebe': typeof AppBebeRoute
   '/sos': typeof AppSosRoute
-  '/receitas': typeof AppReceitasIndexRoute
   '/receitas/$id': typeof AppReceitasIdRoute
+  '/receitas/': typeof AppReceitasIndexRoute
 }
 export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/bebe': typeof AppBebeRoute
   '/sos': typeof AppSosRoute
   '/': typeof AppIndexRoute
-  '/receitas': typeof AppReceitasIndexRoute
   '/receitas/$id': typeof AppReceitasIdRoute
+  '/receitas': typeof AppReceitasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -75,8 +75,8 @@ export interface FileRoutesById {
   '/_app/bebe': typeof AppBebeRoute
   '/_app/sos': typeof AppSosRoute
   '/_app/': typeof AppIndexRoute
-  '/_app/receitas/': typeof AppReceitasIndexRoute
   '/_app/receitas/$id': typeof AppReceitasIdRoute
+  '/_app/receitas/': typeof AppReceitasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -85,10 +85,10 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/bebe'
     | '/sos'
-    | '/receitas'
     | '/receitas/$id'
+    | '/receitas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/onboarding' | '/bebe' | '/sos' | '/' | '/receitas' | '/receitas/$id'
+  to: '/onboarding' | '/bebe' | '/sos' | '/' | '/receitas/$id' | '/receitas'
   id:
     | '__root__'
     | '/_app'
@@ -96,8 +96,8 @@ export interface FileRouteTypes {
     | '/_app/bebe'
     | '/_app/sos'
     | '/_app/'
-    | '/_app/receitas/'
     | '/_app/receitas/$id'
+    | '/_app/receitas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -144,7 +144,7 @@ declare module '@tanstack/react-router' {
     }
     '/_app/receitas/': {
       id: '/_app/receitas/'
-      path: '/receitas/'
+      path: '/receitas'
       fullPath: '/receitas/'
       preLoaderRoute: typeof AppReceitasIndexRouteImport
       parentRoute: typeof AppRoute
@@ -163,16 +163,16 @@ interface AppRouteChildren {
   AppBebeRoute: typeof AppBebeRoute
   AppSosRoute: typeof AppSosRoute
   AppIndexRoute: typeof AppIndexRoute
-  AppReceitasIndexRoute: typeof AppReceitasIndexRoute
   AppReceitasIdRoute: typeof AppReceitasIdRoute
+  AppReceitasIndexRoute: typeof AppReceitasIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppBebeRoute: AppBebeRoute,
   AppSosRoute: AppSosRoute,
   AppIndexRoute: AppIndexRoute,
-  AppReceitasIndexRoute: AppReceitasIndexRoute,
   AppReceitasIdRoute: AppReceitasIdRoute,
+  AppReceitasIndexRoute: AppReceitasIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
