@@ -290,11 +290,19 @@ function RecipeDetail() {
             {!served ? (
               <button
                 type="button"
-                onClick={() => markServed(planMeal)}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent text-sm font-medium text-accent-foreground active:bg-accent/90"
+                onClick={() => handleMarkServed(planMeal)}
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent text-sm font-medium text-accent-foreground transition-transform active:scale-[0.97] active:bg-accent/90"
               >
-                <Check className="h-4 w-4" /> Marcar como servido
+                <Check
+                  key={servedBeat}
+                  className={cn(
+                    "h-4 w-4",
+                    servedBeat > 0 && "animate-[served-pop_500ms_ease-out]"
+                  )}
+                />{" "}
+                Marcar como servido
               </button>
+
             ) : (
               <div>
                 <p className="text-center text-xs text-muted-foreground">
