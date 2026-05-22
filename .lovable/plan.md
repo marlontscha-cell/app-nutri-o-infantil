@@ -1,51 +1,37 @@
-# Lote 1 — 6 receitas de café da manhã
+# Lote 2 — Almoço (7 receitas)
 
-Implementa as 6 receitas enviadas seguindo exatamente o template premium aprovado (todos os campos preservados, sem simplificação). Imagens no tier `fast` (consistente com a Mandioquinha).
+## Esclarecimento sobre as "3 sugestões do café"
+As 6 receitas do Lote 1 já estão implementadas em `src/data/recipes.ts`. A tela inicial mostra menos porque filtra por faixa etária do bebê (`filterRecipes` em `src/lib/baby.ts`). Não é bug. Se quiser, posso, em paralelo, ampliar os `ageBands` das receitas de café para cobrir todas as fases — me confirme.
 
-## Receitas
+## Receitas a criar (mantendo template premium completo)
+Todas seguem exatamente a estrutura do Lote 1: `steps` detalhados, `feedingTip`, `acceptanceTip`, `textureGuide`, `nutritionHighlights`, `allergens`, `storage`, `tip`, `texture`, `difficulty`, `feedingMethods`, flags (`quick`, `blwFriendly`, `acceptanceFriendly`), `restrictionsSafe`, `emoji`, `image`.
 
-1. Papa de Banana com Aveia (`papa-banana-aveia`)
-2. Mingau Cremoso de Maçã e Aveia (`mingau-maca-aveia`)
-3. Panquequinha de Banana para Bebês (`panquequinha-banana-bebe`)
-4. Mamão com Chia e Banana (`mamao-chia-banana`) — id normalizado sem acento para URL segura (você enviou `id: "mamão-chia-banana"` com acento, mas o `slug` já é sem acento; alinho os dois em `mamao-chia-banana`).
-5. Creme de Abacate com Banana (`creme-abacate-banana`)
-6. Cuscuz Macio com Ovo Mexido (`cuscuz-ovo-mexido`)
+1. `arroz-feijao-frango` — Arroz com Feijão e Frango Desfiado (8-12m, 1-2a, 2-3a)
+2. `pure-abobora-carne` — Purê de Abóbora com Carne Desfiada (8-12m, 1-2a)
+3. `macarrao-legumes` — Macarrão com Legumes Macios (1-2a, 2-3a) — BLW
+4. `almondega-batata` — Almôndega Macia com Batata (1-2a, 2-3a) — BLW
+5. `arroz-legumes-ovo` — Arroz Cremoso com Legumes e Ovo (8-12m, 1-2a, 2-3a)
+6. `frango-batata-doce` — Frango Desfiado com Batata-Doce (8-12m, 1-2a, 2-3a) — BLW
+7. `lentilha-arroz-legumes` — Lentilha com Arroz e Legumes (1-2a, 2-3a)
 
-Todos os campos enviados são mantidos integralmente: `steps`, `feedingTip`, `acceptanceTip`, `textureGuide`, `nutritionHighlights`, `allergens`, `storage`, `tip`, `texture`, `difficulty`, `feedingMethods`, `quick`, `acceptanceFriendly`, `blwFriendly`, `restrictionsSafe`.
+Observação: você colou `frango-batata-doce` e `lentilha-arroz-legumes` duplicados — vou considerar apenas uma versão de cada (idêntica).
 
-## Imagens (tier fast, 1024x1024, salvas em `src/assets/recipes/`)
+Ajuste de tipos: `macarrao-legumes` lista `"gluten"` em `allergens`, mas o tipo `Restriction` não tem `sem_gluten`? Tem sim — mantém só como string em `allergens` (que é `string[]`), ok.
 
-Padrão comum: fotografia gastronômica realista, luz natural suave de manhã, louça artesanal clara, mesa de madeira clara, pano de linho neutro, tons quentes e acolhedores, estética maternidade premium, comida em destaque, fundo desfocado leve.
+## Arquivos
+**Criar:**
+- `src/data/recipes/arroz-feijao-frango.ts`
+- `src/data/recipes/pure-abobora-carne.ts`
+- `src/data/recipes/macarrao-legumes.ts`
+- `src/data/recipes/almondega-batata.ts`
+- `src/data/recipes/arroz-legumes-ovo.ts`
+- `src/data/recipes/frango-batata-doce.ts`
+- `src/data/recipes/lentilha-arroz-legumes.ts`
+- `src/assets/recipes/<slug>.jpg` para cada uma (7 imagens, 1024x1024, tier `fast`, fotografia gastronômica realista de pratos infantis em louça neutra, luz natural, fundo limpo)
 
-- `papa-banana-aveia.jpg` — tigela pequena de cerâmica clara com papa cremosa amarelo-claro de banana e aveia, rodelinhas de banana ao lado, colher de madeira pequena.
-- `mingau-maca-aveia.jpg` — tigela rasa branca com mingau bege-claro de maçã e aveia, cubinhos de maçã visíveis, polvilho leve de aveia em flocos.
-- `panquequinha-banana-bebe.jpg` — pratinho com mini panquecas douradas de banana empilhadas, rodelas de banana ao lado, textura macia, douradinhas dos dois lados.
-- `mamao-chia-banana.jpg` — taça baixa de vidro ou cerâmica clara com creme alaranjado de mamão e banana amassados, sementes de chia distribuídas por cima.
-- `creme-abacate-banana.jpg` — tigelinha branca com creme verde-claro liso de abacate e banana, metade de abacate ao lado, banana descascada cortada.
-- `cuscuz-ovo-mexido.jpg` — pratinho fundo com cuscuz amarelo soltinho ao lado de ovo mexido bem macio, garfo pequeno, vapor sutil.
-
-## Arquivos a criar
-
-- `src/data/recipes/papa-banana-aveia.ts`
-- `src/data/recipes/mingau-maca-aveia.ts`
-- `src/data/recipes/panquequinha-banana-bebe.ts`
-- `src/data/recipes/mamao-chia-banana.ts`
-- `src/data/recipes/creme-abacate-banana.ts`
-- `src/data/recipes/cuscuz-ovo-mexido.ts`
-- 6 imagens correspondentes em `src/assets/recipes/`
-
-## Arquivo a atualizar
-
-- `src/data/recipes.ts` — importar e adicionar as 6 receitas ao array `recipes` (mantendo `pureMandioquinhaFrango`).
+**Atualizar:**
+- `src/data/recipes.ts` — importar e adicionar as 7 receitas ao array `recipes`
 
 ## Fora de escopo
-
-- Sem mudanças no template da tela de detalhes
-- Sem mudanças em tipos, hooks ou componentes
-- Sem alteração da receita Mandioquinha existente
-
-## Detalhes técnicos
-
-- Cada arquivo exporta um `Recipe` tipado de `@/lib/types`.
-- Imagens importadas como ES6 (`import image from "@/assets/recipes/<slug>.jpg"`).
-- Geração das 6 imagens em paralelo via `imagegen--generate_image` no tier `fast`.
+- Sem alterações em tipos, hooks, componentes, tela de detalhe ou receitas existentes.
+- Sem mexer na lógica de filtros/sugestões.
