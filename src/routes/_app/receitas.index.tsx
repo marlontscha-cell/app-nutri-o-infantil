@@ -19,7 +19,7 @@ const searchSchema = z.object({
   r: z.array(z.enum(["sem_ovo", "sem_leite", "sem_gluten", "vegetariano"])).optional(),
 });
 
-export const Route = createFileRoute("/_app/receitas")({
+export const Route = createFileRoute("/_app/receitas/")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [

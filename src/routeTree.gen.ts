@@ -13,8 +13,8 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppSosRouteImport } from './routes/_app/sos'
-import { Route as AppReceitasRouteImport } from './routes/_app/receitas'
 import { Route as AppBebeRouteImport } from './routes/_app/bebe'
+import { Route as AppReceitasIndexRouteImport } from './routes/_app/receitas.index'
 import { Route as AppReceitasIdRouteImport } from './routes/_app/receitas.$id'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -36,47 +36,47 @@ const AppSosRoute = AppSosRouteImport.update({
   path: '/sos',
   getParentRoute: () => AppRoute,
 } as any)
-const AppReceitasRoute = AppReceitasRouteImport.update({
-  id: '/receitas',
-  path: '/receitas',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppBebeRoute = AppBebeRouteImport.update({
   id: '/bebe',
   path: '/bebe',
   getParentRoute: () => AppRoute,
 } as any)
+const AppReceitasIndexRoute = AppReceitasIndexRouteImport.update({
+  id: '/receitas/',
+  path: '/receitas/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppReceitasIdRoute = AppReceitasIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AppReceitasRoute,
+  id: '/receitas/$id',
+  path: '/receitas/$id',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/onboarding': typeof OnboardingRoute
   '/bebe': typeof AppBebeRoute
-  '/receitas': typeof AppReceitasRouteWithChildren
   '/sos': typeof AppSosRoute
   '/receitas/$id': typeof AppReceitasIdRoute
+  '/receitas/': typeof AppReceitasIndexRoute
 }
 export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/bebe': typeof AppBebeRoute
-  '/receitas': typeof AppReceitasRouteWithChildren
   '/sos': typeof AppSosRoute
   '/': typeof AppIndexRoute
   '/receitas/$id': typeof AppReceitasIdRoute
+  '/receitas': typeof AppReceitasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/_app/bebe': typeof AppBebeRoute
-  '/_app/receitas': typeof AppReceitasRouteWithChildren
   '/_app/sos': typeof AppSosRoute
   '/_app/': typeof AppIndexRoute
   '/_app/receitas/$id': typeof AppReceitasIdRoute
+  '/_app/receitas/': typeof AppReceitasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -84,20 +84,20 @@ export interface FileRouteTypes {
     | '/'
     | '/onboarding'
     | '/bebe'
-    | '/receitas'
     | '/sos'
     | '/receitas/$id'
+    | '/receitas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/onboarding' | '/bebe' | '/receitas' | '/sos' | '/' | '/receitas/$id'
+  to: '/onboarding' | '/bebe' | '/sos' | '/' | '/receitas/$id' | '/receitas'
   id:
     | '__root__'
     | '/_app'
     | '/onboarding'
     | '/_app/bebe'
-    | '/_app/receitas'
     | '/_app/sos'
     | '/_app/'
     | '/_app/receitas/$id'
+    | '/_app/receitas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -135,13 +135,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSosRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/receitas': {
-      id: '/_app/receitas'
-      path: '/receitas'
-      fullPath: '/receitas'
-      preLoaderRoute: typeof AppReceitasRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/bebe': {
       id: '/_app/bebe'
       path: '/bebe'
@@ -149,40 +142,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBebeRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/receitas/': {
+      id: '/_app/receitas/'
+      path: '/receitas'
+      fullPath: '/receitas/'
+      preLoaderRoute: typeof AppReceitasIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/receitas/$id': {
       id: '/_app/receitas/$id'
-      path: '/$id'
+      path: '/receitas/$id'
       fullPath: '/receitas/$id'
       preLoaderRoute: typeof AppReceitasIdRouteImport
-      parentRoute: typeof AppReceitasRoute
+      parentRoute: typeof AppRoute
     }
   }
 }
 
-interface AppReceitasRouteChildren {
-  AppReceitasIdRoute: typeof AppReceitasIdRoute
-}
-
-const AppReceitasRouteChildren: AppReceitasRouteChildren = {
-  AppReceitasIdRoute: AppReceitasIdRoute,
-}
-
-const AppReceitasRouteWithChildren = AppReceitasRoute._addFileChildren(
-  AppReceitasRouteChildren,
-)
-
 interface AppRouteChildren {
   AppBebeRoute: typeof AppBebeRoute
-  AppReceitasRoute: typeof AppReceitasRouteWithChildren
   AppSosRoute: typeof AppSosRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppReceitasIdRoute: typeof AppReceitasIdRoute
+  AppReceitasIndexRoute: typeof AppReceitasIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppBebeRoute: AppBebeRoute,
-  AppReceitasRoute: AppReceitasRouteWithChildren,
   AppSosRoute: AppSosRoute,
   AppIndexRoute: AppIndexRoute,
+  AppReceitasIdRoute: AppReceitasIdRoute,
+  AppReceitasIndexRoute: AppReceitasIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
