@@ -24,9 +24,13 @@ export function RecipeCard({
         className="group flex w-[170px] shrink-0 flex-col gap-2"
       >
         <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-secondary">
-          <div className="flex h-full items-center justify-center text-5xl">
-            {recipe.emoji}
-          </div>
+          {recipe.image ? (
+            <img src={recipe.image} alt="" loading="lazy" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-5xl">
+              {recipe.emoji}
+            </div>
+          )}
         </div>
         <div>
           <p className="line-clamp-2 text-sm font-medium leading-snug text-foreground">
@@ -49,9 +53,13 @@ export function RecipeCard({
       )}
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
-        <div className="flex h-full items-center justify-center text-7xl">
-          {recipe.emoji}
-        </div>
+        {recipe.image ? (
+          <img src={recipe.image} alt="" loading="lazy" className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full items-center justify-center text-7xl">
+            {recipe.emoji}
+          </div>
+        )}
         <button
           type="button"
           aria-label={fav ? "Remover dos favoritos" : "Adicionar aos favoritos"}

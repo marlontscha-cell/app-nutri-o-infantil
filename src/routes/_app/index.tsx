@@ -145,9 +145,18 @@ function MealCard({
         <Link
           to="/receitas/$id"
           params={{ id: recipe.id }}
-          className="grid h-20 w-20 shrink-0 place-items-center rounded-2xl bg-secondary text-4xl"
+          className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-2xl bg-secondary text-4xl"
         >
-          {recipe.emoji}
+          {recipe.image ? (
+            <img
+              src={recipe.image}
+              alt=""
+              loading="lazy"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            recipe.emoji
+          )}
         </Link>
         <Link
           to="/receitas/$id"
