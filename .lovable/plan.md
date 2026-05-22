@@ -1,54 +1,70 @@
+# Ajustes no template definitivo de receita
 
-# Plano: corrigir abertura da tela de detalhe da receita
+Mantém integralmente o layout, hierarquia, seções e design premium atuais. Apenas refina detalhes visuais e microinterações.
 
-## Diagnóstico
+## 1. Imagem principal +10%
 
-Estrutura atual de rotas:
+Arquivo: `src/routes/_app/receitas.$id.tsx` (bloco hero)
 
-```
-src/routes/_app/
-  receitas.tsx        → /receitas      (lista, com filtros)
-  receitas.$id.tsx    → /receitas/$id  (detalhe)
-```
+- Trocar `aspect-[4/3]` por `aspect-[10/9]` (≈+10% de altura relativa, mantendo largura full e centralização).
+- Manter `object-cover`, fallback de emoji e botões flutuantes (voltar/favorito) nas mesmas posições.
+- Sem mudanças no resto do hero.
 
-Em TanStack Router (flat routing), quando existem **dois arquivos irmãos** onde um é o "base" (`receitas.tsx`) e o outro estende o caminho (`receitas.$id.tsx`), o primeiro vira **layout pai** do segundo. Para o filho aparecer, o pai precisa renderizar `<Outlet />`.
+## 2. Favoritos com animação + toast
 
-O `receitas.tsx` atual **não** tem `<Outlet />` — ele renderiza a página de lista inteira (header, chips, grid). Resultado: ao acessar `/receitas/pure-mandioquinha-frango`, a rota filha casa, mas só a UI da lista aparece. Como o perfil do bebê pode ter idade fora de 8–12m/1–2a, o filtro zera a lista e mostra o `EmptyState` "Nada por aqui ainda".
+Arquivo: `src/routes/_app/receitas.$id.tsx` (botão de coração no hero)
 
-Itens 1–5 da sua checagem estão corretos:
-1. `RecipeCard` e `MealCard` passam `params={{ id: recipe.id }}` para `/receitas/$id` — OK.
-2. `receitas.$id.tsx` busca `recipes.find(r => r.id === params.id)` — OK, o `id` é `"pure-mandioquinha-frango"`.
-3. Não há conflito id/slug — `slug` existe na receita mas a rota usa só `id`.
-4. A tela de detalhe já trata `steps` como `RecipeStep[]` (renderiza `s.step`, `s.title`, `s.description`).
-5. `feedingTip`, `acceptanceTip`, `textureGuide`, `nutritionHighlights`, `storage` já são renderizados condicionalmente.
+- Adicionar estado local `pulse` ao clicar e classe `animate-[heart-pop_400ms_ease-out]` no ícone `Heart`.
+- Definir keyframe `heart-pop` em `src/styles.css`:
+  ```
+  @keyframes heart-pop {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.35); }
+    60% { transform: scale(0.92); }
+    100% { transform: scale(1); }
+  }
+  ```
+- Disparar `toast.success("Receita adicionada aos favoritos 💛")` ou `toast("Receita removida dos favoritos")` via `sonner` conforme novo estado.
+- Não navegar; permanecer na tela.
 
-## Correção
+## 3. "Marcar como servido" com microinteração + toast
 
-Renomear o arquivo da lista para tornar lista e detalhe **rotas irmãs**, não pai/filho:
+Arquivo: `src/routes/_app/receitas.$id.tsx` (sticky action bar)
 
-```
-src/routes/_app/
-  receitas.index.tsx  → /receitas       (lista)
-  receitas.$id.tsx    → /receitas/$id   (detalhe)
-```
+- Ao clicar, aplicar transição `active:scale-[0.97]` + animação `animate-[served-pop_500ms_ease-out]` no ícone `Check`.
+- Adicionar keyframe `served-pop` em `src/styles.css` (scale + leve rotação).
+- Disparar `toast.success("Refeição marcada como servida 🍽️")`.
+- Manter o fluxo atual de revelar o seletor de feedback logo abaixo (sem redirecionar para home).
 
-Em flat routing, `receitas.index.tsx` mapeia para `/receitas` exatamente, sem se tornar pai de `receitas.$id.tsx`.
+## 4. Template definitivo (documentação)
 
-### Passos
+Criar `src/data/recipes/README.md` consolidando a estrutura oficial obrigatória para toda nova receita:
 
-1. **Renomear** `src/routes/_app/receitas.tsx` → `src/routes/_app/receitas.index.tsx`.
-2. **Atualizar a string da rota** dentro do arquivo: `createFileRoute("/_app/receitas")` → `createFileRoute("/_app/receitas/")` (o `index` adiciona a barra final no path interno).
-3. **Atualizar `src/routeTree.gen.ts`** para refletir o novo arquivo (o plugin do TanStack regenera, mas como esse projeto comita o arquivo, precisamos ajustar os imports e nodes para apontar para `receitas.index.tsx` com path `/`).
-4. **Não tocar em nada mais** — `receitas.$id.tsx`, dados da receita, componentes e links continuam exatamente iguais.
+- imagem premium (`image`)
+- título (`title`), emoji (`emoji`)
+- categorias (`meal`, `ageBands`, `feedingMethods`)
+- tags (`blwFriendly`, `quick`, `acceptanceFriendly`, `difficulty`)
+- tempo (`timeMinutes`)
+- restrições (`restrictionsSafe`, `allergens`)
+- ingredientes (`ingredients`)
+- preparo detalhado (`steps[]` com title + description)
+- dica de aceitação (`acceptanceTip`)
+- textura ideal por idade (`textureGuide`)
+- destaques nutricionais (`nutritionHighlights`)
+- conservação (`storage.fridge`, `storage.freezer`)
+- dica de introdução alimentar (`feedingTip`)
+- CTA final (renderizado automaticamente pela tela)
 
-## Verificação pós-fix
+Tom: "mini guia premium de alimentação infantil". Não simplificar nem encurtar campos em receitas futuras.
 
-- Abrir `/` → clicar no card de almoço → deve abrir `/receitas/pure-mandioquinha-frango` com hero, título, chips, ingredientes, passos (com número/título/descrição), guia de textura, nutrição, conservação, dicas e botão ♥.
-- Abrir `/receitas` (Tudo) → deve listar a receita normalmente.
-- Abrir `/receitas/algum-id-invalido` → mostra `notFoundComponent` ("Receita não encontrada"), não a lista.
+## Fora de escopo
 
-## Notas técnicas
+- Sem mudanças em tipos (`src/lib/types.ts`), hooks (`use-favorites`, `use-daily-plan`) ou dados existentes.
+- Sem alteração da receita atual.
+- Sem novas receitas.
 
-- Nenhuma mudança em dados, tipos, componentes de UI ou hooks.
-- Sem novas dependências.
-- O `routeTree.gen.ts` precisa ser ajustado manualmente porque o projeto o mantém versionado.
+## Detalhes técnicos
+
+- `sonner` já está integrado (Toaster montado no root). Importar `toast` de `"sonner"` no arquivo da rota.
+- Keyframes adicionados em `src/styles.css` para reutilização global.
+- Mudança de aspect ratio é puramente CSS (Tailwind arbitrary value).

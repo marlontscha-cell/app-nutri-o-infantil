@@ -1,6 +1,8 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { ArrowLeft, Heart, Clock, Baby, Check, Leaf, Snowflake, Refrigerator } from "lucide-react";
+
 import { recipes } from "@/data/recipes";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useDailyPlan } from "@/hooks/use-daily-plan";
@@ -53,6 +55,26 @@ function RecipeDetail() {
   const { plan, markServed, setFeedback } = useDailyPlan();
   const router = useRouter();
   const fav = has(recipe.id);
+  const [heartBeat, setHeartBeat] = useState(0);
+  const [servedBeat, setServedBeat] = useState(0);
+
+  const handleToggleFav = () => {
+    const willFav = !fav;
+    toggle(recipe.id);
+    setHeartBeat((n) => n + 1);
+    if (willFav) {
+      toast.success("Receita adicionada aos favoritos 💛");
+    } else {
+      toast("Receita removida dos favoritos");
+    }
+  };
+
+  const handleMarkServed = (meal: Meal) => {
+    markServed(meal);
+    setServedBeat((n) => n + 1);
+    toast.success("Refeição marcada como servida 🍽️");
+  };
+
 
   const planMeal = useMemo<Meal | null>(() => {
     if (!plan) return null;
@@ -74,17 +96,17 @@ function RecipeDetail() {
     <div className="pb-32">
       {/* Hero image */}
       <div className="relative">
-        <div className="aspect-[4/3] w-full overflow-hidden bg-secondary">
+        <div className="aspect-[10/9] w-full overflow-hidden bg-secondary">
           {recipe.image ? (
             <img
               src={recipe.image}
               alt={recipe.title}
               width={1024}
-              height={768}
+              height={922}
               className="h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-[140px]">
+            <div className="flex h-full w-full items-center justify-center text-[150px]">
               {recipe.emoji}
             </div>
           )}
@@ -99,12 +121,20 @@ function RecipeDetail() {
         </button>
         <button
           type="button"
-          onClick={() => toggle(recipe.id)}
-          className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-background/85 shadow-sm backdrop-blur"
+          onClick={handleToggleFav}
+          className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-background/85 shadow-sm backdrop-blur active:scale-95 transition-transform"
           aria-label={fav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
         >
-          <Heart className={cn("h-5 w-5", fav && "fill-accent text-accent")} />
+          <Heart
+            key={heartBeat}
+            className={cn(
+              "h-5 w-5 transition-colors",
+              fav && "fill-accent text-accent",
+              heartBeat > 0 && "animate-[heart-pop_400ms_ease-out]"
+            )}
+          />
         </button>
+
       </div>
 
       {/* Header */}
@@ -260,11 +290,19 @@ function RecipeDetail() {
             {!served ? (
               <button
                 type="button"
-                onClick={() => markServed(planMeal)}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent text-sm font-medium text-accent-foreground active:bg-accent/90"
+                onClick={() => handleMarkServed(planMeal)}
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent text-sm font-medium text-accent-foreground transition-transform active:scale-[0.97] active:bg-accent/90"
               >
-                <Check className="h-4 w-4" /> Marcar como servido
+                <Check
+                  key={servedBeat}
+                  className={cn(
+                    "h-4 w-4",
+                    servedBeat > 0 && "animate-[served-pop_500ms_ease-out]"
+                  )}
+                />{" "}
+                Marcar como servido
               </button>
+
             ) : (
               <div>
                 <p className="text-center text-xs text-muted-foreground">
