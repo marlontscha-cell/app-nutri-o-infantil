@@ -8,6 +8,8 @@ export type AgeBand = "6-8m" | "8-12m" | "1-2a" | "2-3a";
 
 export type Feedback = "amou" | "aceitou" | "rejeitou";
 
+export type Difficulty = "facil" | "medio" | "avancado";
+
 export type BabyProfile = {
   name: string;
   birthMonth: string; // ISO yyyy-mm-01
@@ -15,12 +17,26 @@ export type BabyProfile = {
   restrictions: Restriction[];
 };
 
+export type RecipeStep = {
+  step: number;
+  title: string;
+  description: string;
+};
+
+export type RecipeStorage = {
+  fridge?: string;
+  freezer?: string;
+};
+
 export type Recipe = {
   id: string;
+  slug?: string;
   title: string;
   meal: Meal;
   ageBands: AgeBand[];
+  feedingMethods?: FeedingStyle[];
   timeMinutes: number;
+  difficulty?: Difficulty;
   blwFriendly: boolean;
   quick: boolean; // <= 15 min
   acceptanceFriendly: boolean;
@@ -28,9 +44,15 @@ export type Recipe = {
   image?: string;
   emoji: string;
   ingredients: string[];
-  steps: string[];
+  steps: RecipeStep[];
   tip: string;
   texture?: string;
+  feedingTip?: string;
+  acceptanceTip?: string;
+  textureGuide?: Partial<Record<AgeBand, string>>;
+  nutritionHighlights?: string[];
+  allergens?: string[];
+  storage?: RecipeStorage;
 };
 
 export type MealEntry = {
@@ -98,4 +120,10 @@ export const FEEDBACK_LABEL: Record<Feedback, string> = {
   amou: "Amou",
   aceitou: "Aceitou",
   rejeitou: "Rejeitou",
+};
+
+export const DIFFICULTY_LABEL: Record<Difficulty, string> = {
+  facil: "Fácil",
+  medio: "Médio",
+  avancado: "Avançado",
 };
